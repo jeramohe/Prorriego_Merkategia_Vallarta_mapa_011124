@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/MarkerCluster.css">
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet.markercluster.js"></script>
+        <script src="data/Arquitecturaypaisajeurbano_2.js"></script>
+        <script src="data/Cementerios_3.js"></script>
+        <script src="data/Camposdegolf_4.js"></script>
+        <script src="data/Clubesyparques_5.js"></script>
+        <script src="data/Universidades_6.js"></script>
+        <script src="data/Administracindebienesraces_7.js"></script>
+        <script src="data/Condominiosycotos_8.js"></script>
+        <script src="data/Hoteles_9.js"></script>
+        <script src="data/Desarrolladores_10.js"></script>
+        <script src="data/Equipoderiegoagrcola_11.js"></script>
+        <script src="data/Competidores_12.js"></script>
+        <script src="data/Contratistas_13.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[20.515364613249144,-105.47259987400344],[20.8226894646334,-104.95796389168326]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleSatelliteHybrid_0');
+        map.getPane('pane_GoogleSatelliteHybrid_0').style.zIndex = 400;
+        var layer_GoogleSatelliteHybrid_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatelliteHybrid_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_GoogleSatelliteHybrid_0;
+        map.addLayer(layer_GoogleSatelliteHybrid_0);
+        map.createPane('pane_GoogleMaps_1');
+        map.getPane('pane_GoogleMaps_1').style.zIndex = 401;
+        var layer_GoogleMaps_1 = L.tileLayer('https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleMaps_1',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_GoogleMaps_1;
+        map.addLayer(layer_GoogleMaps_1);
+        function pop_Arquitecturaypaisajeurbano_2(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Personal</th>\
+                        <td class="visible-with-data" id="Personal">' + (feature.properties['Personal'] !== null ? autolinker.link(feature.properties['Personal'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Arquitecturaypaisajeurbano_2_0() {
+            return {
+                pane: 'pane_Arquitecturaypaisajeurbano_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(133,182,111,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Arquitecturaypaisajeurbano_2');
+        map.getPane('pane_Arquitecturaypaisajeurbano_2').style.zIndex = 402;
+        map.getPane('pane_Arquitecturaypaisajeurbano_2').style['mix-blend-mode'] = 'normal';
+        var layer_Arquitecturaypaisajeurbano_2 = new L.geoJson(json_Arquitecturaypaisajeurbano_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Arquitecturaypaisajeurbano_2',
+            layerName: 'layer_Arquitecturaypaisajeurbano_2',
+            pane: 'pane_Arquitecturaypaisajeurbano_2',
+            onEachFeature: pop_Arquitecturaypaisajeurbano_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Arquitecturaypaisajeurbano_2_0(feature));
+            },
+        });
+        var cluster_Arquitecturaypaisajeurbano_2 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Arquitecturaypaisajeurbano_2.addLayer(layer_Arquitecturaypaisajeurbano_2);
+
+        bounds_group.addLayer(layer_Arquitecturaypaisajeurbano_2);
+        function pop_Cementerios_3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Interés</th>\
+                        <td class="visible-with-data" id="Interés">' + (feature.properties['Interés'] !== null ? autolinker.link(feature.properties['Interés'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Personal</th>\
+                        <td class="visible-with-data" id="Personal">' + (feature.properties['Personal'] !== null ? autolinker.link(feature.properties['Personal'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Cementerios_3_0() {
+            return {
+                pane: 'pane_Cementerios_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(114,155,111,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Cementerios_3');
+        map.getPane('pane_Cementerios_3').style.zIndex = 403;
+        map.getPane('pane_Cementerios_3').style['mix-blend-mode'] = 'normal';
+        var layer_Cementerios_3 = new L.geoJson(json_Cementerios_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Cementerios_3',
+            layerName: 'layer_Cementerios_3',
+            pane: 'pane_Cementerios_3',
+            onEachFeature: pop_Cementerios_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Cementerios_3_0(feature));
+            },
+        });
+        var cluster_Cementerios_3 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Cementerios_3.addLayer(layer_Cementerios_3);
+
+        bounds_group.addLayer(layer_Cementerios_3);
+        function pop_Camposdegolf_4(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Interés</th>\
+                        <td class="visible-with-data" id="Interés">' + (feature.properties['Interés'] !== null ? autolinker.link(feature.properties['Interés'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Camposdegolf_4_0() {
+            return {
+                pane: 'pane_Camposdegolf_4',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(232,113,141,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Camposdegolf_4');
+        map.getPane('pane_Camposdegolf_4').style.zIndex = 404;
+        map.getPane('pane_Camposdegolf_4').style['mix-blend-mode'] = 'normal';
+        var layer_Camposdegolf_4 = new L.geoJson(json_Camposdegolf_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Camposdegolf_4',
+            layerName: 'layer_Camposdegolf_4',
+            pane: 'pane_Camposdegolf_4',
+            onEachFeature: pop_Camposdegolf_4,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Camposdegolf_4_0(feature));
+            },
+        });
+        var cluster_Camposdegolf_4 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Camposdegolf_4.addLayer(layer_Camposdegolf_4);
+
+        bounds_group.addLayer(layer_Camposdegolf_4);
+        function pop_Clubesyparques_5(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Interés</th>\
+                        <td class="visible-with-data" id="Interés">' + (feature.properties['Interés'] !== null ? autolinker.link(feature.properties['Interés'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Clubesyparques_5_0() {
+            return {
+                pane: 'pane_Clubesyparques_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Clubesyparques_5');
+        map.getPane('pane_Clubesyparques_5').style.zIndex = 405;
+        map.getPane('pane_Clubesyparques_5').style['mix-blend-mode'] = 'normal';
+        var layer_Clubesyparques_5 = new L.geoJson(json_Clubesyparques_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Clubesyparques_5',
+            layerName: 'layer_Clubesyparques_5',
+            pane: 'pane_Clubesyparques_5',
+            onEachFeature: pop_Clubesyparques_5,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Clubesyparques_5_0(feature));
+            },
+        });
+        var cluster_Clubesyparques_5 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Clubesyparques_5.addLayer(layer_Clubesyparques_5);
+
+        bounds_group.addLayer(layer_Clubesyparques_5);
+        function pop_Universidades_6(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Interés</th>\
+                        <td class="visible-with-data" id="Interés">' + (feature.properties['Interés'] !== null ? autolinker.link(feature.properties['Interés'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Personal</th>\
+                        <td class="visible-with-data" id="Personal">' + (feature.properties['Personal'] !== null ? autolinker.link(feature.properties['Personal'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Universidades_6_0() {
+            return {
+                pane: 'pane_Universidades_6',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(145,82,45,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Universidades_6');
+        map.getPane('pane_Universidades_6').style.zIndex = 406;
+        map.getPane('pane_Universidades_6').style['mix-blend-mode'] = 'normal';
+        var layer_Universidades_6 = new L.geoJson(json_Universidades_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Universidades_6',
+            layerName: 'layer_Universidades_6',
+            pane: 'pane_Universidades_6',
+            onEachFeature: pop_Universidades_6,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Universidades_6_0(feature));
+            },
+        });
+        var cluster_Universidades_6 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Universidades_6.addLayer(layer_Universidades_6);
+
+        bounds_group.addLayer(layer_Universidades_6);
+        function pop_Administracindebienesraces_7(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Personal</th>\
+                        <td class="visible-with-data" id="Personal">' + (feature.properties['Personal'] !== null ? autolinker.link(feature.properties['Personal'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Administracindebienesraces_7_0() {
+            return {
+                pane: 'pane_Administracindebienesraces_7',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,113,88,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Administracindebienesraces_7');
+        map.getPane('pane_Administracindebienesraces_7').style.zIndex = 407;
+        map.getPane('pane_Administracindebienesraces_7').style['mix-blend-mode'] = 'normal';
+        var layer_Administracindebienesraces_7 = new L.geoJson(json_Administracindebienesraces_7, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Administracindebienesraces_7',
+            layerName: 'layer_Administracindebienesraces_7',
+            pane: 'pane_Administracindebienesraces_7',
+            onEachFeature: pop_Administracindebienesraces_7,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Administracindebienesraces_7_0(feature));
+            },
+        });
+        var cluster_Administracindebienesraces_7 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Administracindebienesraces_7.addLayer(layer_Administracindebienesraces_7);
+
+        bounds_group.addLayer(layer_Administracindebienesraces_7);
+        function pop_Condominiosycotos_8(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">field_4</th>\
+                        <td class="visible-with-data" id="field_4">' + (feature.properties['field_4'] !== null ? autolinker.link(feature.properties['field_4'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Telefono</th>\
+                        <td class="visible-with-data" id="Telefono">' + (feature.properties['Telefono'] !== null ? autolinker.link(feature.properties['Telefono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Interés</th>\
+                        <td class="visible-with-data" id="Interés">' + (feature.properties['Interés'] !== null ? autolinker.link(feature.properties['Interés'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Condominiosycotos_8_0() {
+            return {
+                pane: 'pane_Condominiosycotos_8',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(243,166,178,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Condominiosycotos_8');
+        map.getPane('pane_Condominiosycotos_8').style.zIndex = 408;
+        map.getPane('pane_Condominiosycotos_8').style['mix-blend-mode'] = 'normal';
+        var layer_Condominiosycotos_8 = new L.geoJson(json_Condominiosycotos_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Condominiosycotos_8',
+            layerName: 'layer_Condominiosycotos_8',
+            pane: 'pane_Condominiosycotos_8',
+            onEachFeature: pop_Condominiosycotos_8,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Condominiosycotos_8_0(feature));
+            },
+        });
+        var cluster_Condominiosycotos_8 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Condominiosycotos_8.addLayer(layer_Condominiosycotos_8);
+
+        bounds_group.addLayer(layer_Condominiosycotos_8);
+        function pop_Hoteles_9(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIpo</th>\
+                        <td class="visible-with-data" id="TIpo">' + (feature.properties['TIpo'] !== null ? autolinker.link(feature.properties['TIpo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Estrellas</th>\
+                        <td class="visible-with-data" id="Estrellas">' + (feature.properties['Estrellas'] !== null ? autolinker.link(feature.properties['Estrellas'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Personal</th>\
+                        <td class="visible-with-data" id="Personal">' + (feature.properties['Personal'] !== null ? autolinker.link(feature.properties['Personal'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Interés</th>\
+                        <td class="visible-with-data" id="Interés">' + (feature.properties['Interés'] !== null ? autolinker.link(feature.properties['Interés'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Hoteles_9_0() {
+            return {
+                pane: 'pane_Hoteles_9',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(152,125,183,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Hoteles_9');
+        map.getPane('pane_Hoteles_9').style.zIndex = 409;
+        map.getPane('pane_Hoteles_9').style['mix-blend-mode'] = 'normal';
+        var layer_Hoteles_9 = new L.geoJson(json_Hoteles_9, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Hoteles_9',
+            layerName: 'layer_Hoteles_9',
+            pane: 'pane_Hoteles_9',
+            onEachFeature: pop_Hoteles_9,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Hoteles_9_0(feature));
+            },
+        });
+        var cluster_Hoteles_9 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Hoteles_9.addLayer(layer_Hoteles_9);
+
+        bounds_group.addLayer(layer_Hoteles_9);
+        function pop_Desarrolladores_10(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ciudad</th>\
+                        <td class="visible-with-data" id="Ciudad">' + (feature.properties['Ciudad'] !== null ? autolinker.link(feature.properties['Ciudad'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Personal</th>\
+                        <td class="visible-with-data" id="Personal">' + (feature.properties['Personal'] !== null ? autolinker.link(feature.properties['Personal'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Desarrolladores_10_0() {
+            return {
+                pane: 'pane_Desarrolladores_10',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Desarrolladores_10');
+        map.getPane('pane_Desarrolladores_10').style.zIndex = 410;
+        map.getPane('pane_Desarrolladores_10').style['mix-blend-mode'] = 'normal';
+        var layer_Desarrolladores_10 = new L.geoJson(json_Desarrolladores_10, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Desarrolladores_10',
+            layerName: 'layer_Desarrolladores_10',
+            pane: 'pane_Desarrolladores_10',
+            onEachFeature: pop_Desarrolladores_10,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Desarrolladores_10_0(feature));
+            },
+        });
+        var cluster_Desarrolladores_10 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Desarrolladores_10.addLayer(layer_Desarrolladores_10);
+
+        bounds_group.addLayer(layer_Desarrolladores_10);
+        function pop_Equipoderiegoagrcola_11(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Telefono</th>\
+                        <td class="visible-with-data" id="Telefono">' + (feature.properties['Telefono'] !== null ? autolinker.link(feature.properties['Telefono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Categoría</th>\
+                        <td class="visible-with-data" id="Categoría">' + (feature.properties['Categoría'] !== null ? autolinker.link(feature.properties['Categoría'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Equipoderiegoagrcola_11_0() {
+            return {
+                pane: 'pane_Equipoderiegoagrcola_11',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(145,82,45,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Equipoderiegoagrcola_11');
+        map.getPane('pane_Equipoderiegoagrcola_11').style.zIndex = 411;
+        map.getPane('pane_Equipoderiegoagrcola_11').style['mix-blend-mode'] = 'normal';
+        var layer_Equipoderiegoagrcola_11 = new L.geoJson(json_Equipoderiegoagrcola_11, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Equipoderiegoagrcola_11',
+            layerName: 'layer_Equipoderiegoagrcola_11',
+            pane: 'pane_Equipoderiegoagrcola_11',
+            onEachFeature: pop_Equipoderiegoagrcola_11,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Equipoderiegoagrcola_11_0(feature));
+            },
+        });
+        var cluster_Equipoderiegoagrcola_11 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Equipoderiegoagrcola_11.addLayer(layer_Equipoderiegoagrcola_11);
+
+        bounds_group.addLayer(layer_Equipoderiegoagrcola_11);
+        function pop_Competidores_12(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td class="visible-with-data" id="Municipio">' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Direccion</th>\
+                        <td class="visible-with-data" id="Direccion">' + (feature.properties['Direccion'] !== null ? autolinker.link(feature.properties['Direccion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Telefono</th>\
+                        <td class="visible-with-data" id="Telefono">' + (feature.properties['Telefono'] !== null ? autolinker.link(feature.properties['Telefono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Categoría</th>\
+                        <td class="visible-with-data" id="Categoría">' + (feature.properties['Categoría'] !== null ? autolinker.link(feature.properties['Categoría'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Competidores_12_0() {
+            return {
+                pane: 'pane_Competidores_12',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,113,88,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Competidores_12');
+        map.getPane('pane_Competidores_12').style.zIndex = 412;
+        map.getPane('pane_Competidores_12').style['mix-blend-mode'] = 'normal';
+        var layer_Competidores_12 = new L.geoJson(json_Competidores_12, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Competidores_12',
+            layerName: 'layer_Competidores_12',
+            pane: 'pane_Competidores_12',
+            onEachFeature: pop_Competidores_12,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Competidores_12_0(feature));
+            },
+        });
+        var cluster_Competidores_12 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Competidores_12.addLayer(layer_Competidores_12);
+
+        bounds_group.addLayer(layer_Competidores_12);
+        function pop_Contratistas_13(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Fuente</th>\
+                        <td class="visible-with-data" id="Fuente">' + (feature.properties['Fuente'] !== null ? autolinker.link(feature.properties['Fuente'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ciudad</th>\
+                        <td class="visible-with-data" id="Ciudad">' + (feature.properties['Ciudad'] !== null ? autolinker.link(feature.properties['Ciudad'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Maps</th>\
+                        <td class="visible-with-data" id="Google Maps">' + (feature.properties['Google Maps'] !== null ? autolinker.link(feature.properties['Google Maps'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nombre de Empresa</th>\
+                        <td class="visible-with-data" id="Nombre de Empresa">' + (feature.properties['Nombre de Empresa'] !== null ? autolinker.link(feature.properties['Nombre de Empresa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Razon Social</th>\
+                        <td class="visible-with-data" id="Razon Social">' + (feature.properties['Razon Social'] !== null ? autolinker.link(feature.properties['Razon Social'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Dirección</th>\
+                        <td class="visible-with-data" id="Dirección">' + (feature.properties['Dirección'] !== null ? autolinker.link(feature.properties['Dirección'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Teléfono</th>\
+                        <td class="visible-with-data" id="Teléfono">' + (feature.properties['Teléfono'] !== null ? autolinker.link(feature.properties['Teléfono'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Pagina Web</th>\
+                        <td class="visible-with-data" id="Pagina Web">' + (feature.properties['Pagina Web'] !== null ? autolinker.link(feature.properties['Pagina Web'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Email</th>\
+                        <td class="visible-with-data" id="Email">' + (feature.properties['Email'] !== null ? autolinker.link(feature.properties['Email'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tipo</th>\
+                        <td class="visible-with-data" id="Tipo">' + (feature.properties['Tipo'] !== null ? autolinker.link(feature.properties['Tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Interés</th>\
+                        <td class="visible-with-data" id="Interés">' + (feature.properties['Interés'] !== null ? autolinker.link(feature.properties['Interés'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Contratistas_13_0() {
+            return {
+                pane: 'pane_Contratistas_13',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(243,166,178,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Contratistas_13');
+        map.getPane('pane_Contratistas_13').style.zIndex = 413;
+        map.getPane('pane_Contratistas_13').style['mix-blend-mode'] = 'normal';
+        var layer_Contratistas_13 = new L.geoJson(json_Contratistas_13, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Contratistas_13',
+            layerName: 'layer_Contratistas_13',
+            pane: 'pane_Contratistas_13',
+            onEachFeature: pop_Contratistas_13,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Contratistas_13_0(feature));
+            },
+        });
+        var cluster_Contratistas_13 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Contratistas_13.addLayer(layer_Contratistas_13);
+
+        bounds_group.addLayer(layer_Contratistas_13);
+        cluster_Contratistas_13.addTo(map);
+        var baseMaps = {};
+        var overlaysTree = [
+            {label: '<img src="legend/Contratistas_13.png" /> Contratistas', layer: cluster_Contratistas_13},
+            {label: '<img src="legend/Competidores_12.png" /> Competidores', layer: cluster_Competidores_12},
+            {label: '<img src="legend/Equipoderiegoagrcola_11.png" /> Equipo de riego agrícola', layer: cluster_Equipoderiegoagrcola_11},
+            {label: '<img src="legend/Desarrolladores_10.png" /> Desarrolladores', layer: cluster_Desarrolladores_10},
+            {label: '<img src="legend/Hoteles_9.png" /> Hoteles', layer: cluster_Hoteles_9},
+            {label: '<img src="legend/Condominiosycotos_8.png" /> Condominios y cotos', layer: cluster_Condominiosycotos_8},
+            {label: '<img src="legend/Administracindebienesraces_7.png" /> Administración de bienes raíces', layer: cluster_Administracindebienesraces_7},
+            {label: '<img src="legend/Universidades_6.png" /> Universidades', layer: cluster_Universidades_6},
+            {label: '<img src="legend/Clubesyparques_5.png" /> Clubes y parques', layer: cluster_Clubesyparques_5},
+            {label: '<img src="legend/Camposdegolf_4.png" /> Campos de golf', layer: cluster_Camposdegolf_4},
+            {label: '<img src="legend/Cementerios_3.png" /> Cementerios', layer: cluster_Cementerios_3},
+            {label: '<img src="legend/Arquitecturaypaisajeurbano_2.png" /> Arquitectura y paisaje urbano', layer: cluster_Arquitecturaypaisajeurbano_2},
+            {label: "Google Maps", layer: layer_GoogleMaps_1},
+            {label: "Google Satellite Hybrid", layer: layer_GoogleSatelliteHybrid_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
